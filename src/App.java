@@ -1,148 +1,163 @@
-import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-public class App extends Application {
+public class App {
     private Customer loggedInCustomer;
     private List<Pizza> shoppingCart = new ArrayList<>();
+    private Scanner scanner = new Scanner(System.in);
 
-    @Override
-    public void start(Stage primaryStage) {
-        showLoginPage(primaryStage);
+    public static void main(String[] args) {
+        App app = new App();
+        app.start();
     }
 
-    private void showLoginPage(Stage primaryStage) {
-        TextField usernameField = new TextField();
-        usernameField.setPromptText("Username");
-        PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Password");
-        Button loginButton = new Button("Login");
-        Button registerButton = new Button("Register");
+    public void start() {
+        showLoginPage();
+    }
 
-        loginButton.setOnAction(event -> {
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-            CustomerDAO customerDAO = new CustomerDAO();
-            Customer customer = customerDAO.getCustomerByUsernameAndPassword(username, password);
-            if (customer != null) {
-                loggedInCustomer = customer;
-                showMenuPage(primaryStage);
-            } else {
-                System.out.println("Invalid username or password");
+    private void showLoginPage() {
+        while (true) {
+            System.out.println("\nPizza Ordering System - Login");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    handleLogin();
+                    break;
+                case "2":
+                    handleRegistration();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
             }
-        });
-
-        registerButton.setOnAction(event -> showRegistrationPage(primaryStage));
-
-        VBox vbox = new VBox(usernameField, passwordField, loginButton, registerButton);
-        Scene scene = new Scene(vbox, 300, 200);
-
-        primaryStage.setTitle("Pizza Ordering System - Login");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        }
     }
 
-    private void showRegistrationPage(Stage primaryStage) {
-        TextField nameField = new TextField();
-        nameField.setPromptText("Name");
-        ComboBox<String> genderComboBox = new ComboBox<>();
-        genderComboBox.getItems().addAll("Male", "Female", "Other");
-        DatePicker birthdatePicker = new DatePicker();
-        TextField phoneNumberField = new TextField();
-        phoneNumberField.setPromptText("Phone Number");
-        TextField addressField = new TextField();
-        addressField.setPromptText("Address");
-        TextField usernameField = new TextField();
-        usernameField.setPromptText("Username");
-        PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Password");
-        Button registerButton = new Button("Register");
+    private void handleLogin() {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
 
-        registerButton.setOnAction(event -> {
-            String name = nameField.getText();
-            String gender = genderComboBox.getValue();
-            String birthdate = (birthdatePicker.getValue() != null) ? birthdatePicker.getValue().toString() : "";
-            String phoneNumber = phoneNumberField.getText();
-            String address = addressField.getText();
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-
-            Customer customer = new Customer(0, name, gender, birthdate, phoneNumber, address, username, password);
-            CustomerDAO customerDAO = new CustomerDAO();
-            if (customerDAO.registerCustomer(customer)) {
-                System.out.println("Registration successful");
-                showLoginPage(primaryStage);
-            } else {
-                System.out.println("Registration failed");
-            }
-        });
-
-        VBox vbox = new VBox(nameField, genderComboBox, birthdatePicker, phoneNumberField, addressField, usernameField, passwordField, registerButton);
-        Scene scene = new Scene(vbox, 400, 400);
-
-        primaryStage.setTitle("Pizza Ordering System - Register");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        CustomerDAO customerDAO = new CustomerDAO();
+        Customer customer = customerDAO.getCustomerByUsernameAndPassword(username, password);
+        if (customer != null) {
+            loggedInCustomer = customer;
+            showMenuPage();
+        } else {
+            System.out.println("Invalid username or password.");
+        }
     }
 
-    private void showMenuPage(Stage primaryStage) {
+    private void handleRegistration() {
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter gender (Male/Female/Other): ");
+        String gender = scanner.nextLine();
+        System.out.print("Enter birthdate (YYYY-MM-DD): ");
+        String birthdate = scanner.nextLine();
+        System.out.print("Enter phone number: ");
+        String phoneNumber = scanner.nextLine();
+        System.out.print("Enter address: ");
+        String address = scanner.nextLine();
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        Customer customer = new Customer(0, name, gender, birthdate, phoneNumber, address, username, password);
+        CustomerDAO customerDAO = new CustomerDAO();
+        if (customerDAO.registerCustomer(customer)) {
+            System.out.println("Registration successful.");
+        } else {
+            System.out.println("Registration failed.");
+        }
+    }
+
+    private void showMenuPage() {
         PizzaDAO pizzaDAO = new PizzaDAO();
         List<Pizza> pizzaList = pizzaDAO.getAllPizzas();
 
-        ObservableList<String> pizzaObservableList = FXCollections.observableArrayList();
-        for (Pizza pizza : pizzaList) {
-            pizzaObservableList.add(pizza.getName() + " - Price: " + pizza.getPrice() + "€\nIngredients: " + pizza.getIngredients() + "\nVegetarian: " + (pizza.isVegetarian() ? "Yes" : "No") + "\nVegan: " + (pizza.isVegan() ? "Yes" : "No"));
-        }
-
-        ListView<String> pizzaListView = new ListView<>(pizzaObservableList);
-        Button addToCartButton = new Button("Add to Cart");
-        Button placeOrderButton = new Button("Place Order");
-
-        addToCartButton.setOnAction(event -> {
-            int selectedIndex = pizzaListView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex != -1) {
-                Pizza selectedPizza = pizzaList.get(selectedIndex);
-                shoppingCart.add(selectedPizza);
-                System.out.println("Added to cart: " + selectedPizza.getName());
+        while (true) {
+            System.out.println("\nPizza Ordering System - Menu");
+            for (int i = 0; i < pizzaList.size(); i++) {
+                Pizza pizza = pizzaList.get(i);
+                System.out.printf("%d. %s - Price: %.2f€\n   Ingredients: %s\n   Vegetarian: %s\n   Vegan: %s\n",
+                        i + 1, pizza.getName(), pizza.getPrice(), pizza.getIngredients(),
+                        pizza.isVegetarian() ? "Yes" : "No",
+                        pizza.isVegan() ? "Yes" : "No");
             }
-        });
+            System.out.println((pizzaList.size() + 1) + ". View Cart");
+            System.out.println((pizzaList.size() + 2) + ". Logout");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
 
-        placeOrderButton.setOnAction(event -> {
-            if (!shoppingCart.isEmpty() && loggedInCustomer != null) {
-                OrderDAO orderDAO = new OrderDAO();
-                Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending");
-                if (orderDAO.placeOrder(order)) {
-                    System.out.println("Order placed successfully!");
+            try {
+                int option = Integer.parseInt(choice);
+                if (option >= 1 && option <= pizzaList.size()) {
+                    addToCart(pizzaList.get(option - 1));
+                } else if (option == pizzaList.size() + 1) {
+                    viewCart();
+                } else if (option == pizzaList.size() + 2) {
+                    loggedInCustomer = null;
                     shoppingCart.clear();
+                    break;
                 } else {
-                    System.out.println("Failed to place order.");
+                    System.out.println("Invalid choice. Please try again.");
                 }
-            } else {
-                System.out.println("Your cart is empty or you are not logged in.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
             }
-        });
-
-        VBox vbox = new VBox(pizzaListView, addToCartButton, placeOrderButton);
-        Scene scene = new Scene(vbox, 400, 500);
-
-        primaryStage.setTitle("Pizza Ordering System - Menu");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        }
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void addToCart(Pizza pizza) {
+        shoppingCart.add(pizza);
+        System.out.println("Added to cart: " + pizza.getName());
+    }
+
+    private void viewCart() {
+        if (shoppingCart.isEmpty()) {
+            System.out.println("Your cart is empty.");
+        } else {
+            System.out.println("\nShopping Cart:");
+            for (int i = 0; i < shoppingCart.size(); i++) {
+                Pizza pizza = shoppingCart.get(i);
+                System.out.printf("%d. %s - Price: %.2f€\n", i + 1, pizza.getName(), pizza.getPrice());
+            }
+            System.out.println("\n1. Place Order");
+            System.out.println("2. Back to Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    placeOrder();
+                    break;
+                case "2":
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private void placeOrder() {
+        if (!shoppingCart.isEmpty() && loggedInCustomer != null) {
+            OrderDAO orderDAO = new OrderDAO();
+            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending");
+            if (orderDAO.placeOrder(order)) {
+                System.out.println("Order placed successfully!");
+                shoppingCart.clear();
+            } else {
+                System.out.println("Failed to place order.");
+            }
+        } else {
+            System.out.println("Your cart is empty or you are not logged in.");
+        }
     }
 }
