@@ -18,7 +18,8 @@ public class PizzaDAO {
                     rs.getString("name"),
                     rs.getDouble("price"),
                     rs.getBoolean("vegetarian"),
-                    rs.getBoolean("vegan")
+                    rs.getBoolean("vegan"),
+                    rs.getString("ingredients")
                 ));
             }
         } catch (SQLException e) {
