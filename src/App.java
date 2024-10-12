@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class MainApplication extends Application {
+public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         PizzaDAO pizzaDAO = new PizzaDAO();
