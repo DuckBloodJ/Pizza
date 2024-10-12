@@ -19,12 +19,30 @@ public class PizzaDAO {
                     rs.getDouble("price"),
                     rs.getBoolean("vegetarian"),
                     rs.getBoolean("vegan"),
-                    rs.getString("ingredients")
+                    rs.getString("ingredients"),
+                    rs.getBoolean("isPizza")
                 ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return pizzas;
+    }
+
+    public boolean addPizza(Pizza pizza) {
+        String query = "INSERT INTO pizzas (name, price, vegetarian, vegan, ingredients) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, pizza.getName());
+            stmt.setDouble(2, pizza.getPrice());
+            stmt.setBoolean(3, pizza.isVegetarian());
+            stmt.setBoolean(4, pizza.isVegan());
+            stmt.setString(5, pizza.getIngredients());
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

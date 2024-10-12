@@ -17,57 +17,11 @@ public class OrderDAO {
                 int customerId = rs.getInt("customer_id");
                 String status = rs.getString("status");
 
-                // Fetch products for this order
+                // Fetch pizzas for this order
                 PizzaDAO pizzaDAO = new PizzaDAO();
-                List<Product> products = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
+                List<Pizza> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
 
-                orders.add(new Order(orderId, customerId, products, status));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return orders;
-    }
-    public Order getOrderById(int orderId) {
-        Order order = null;
-        String query = "SELECT * FROM orders WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, orderId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    int customerId = rs.getInt("customer_id");
-                    String status = rs.getString("status");
-
-                    // Fetch products for this order
-                    PizzaDAO pizzaDAO = new PizzaDAO();
-                    List<Product> products = pizzaDAO.getAllPizzas(); // You might want to adjust this method
-
-                    order = new Order(orderId, customerId, products, status);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return order; // Will return null if no order is found
-    }
-    public List<Order> getOrdersByCustomerId(int customerId) {
-        List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM orders WHERE customer_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, customerId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    int orderId = rs.getInt("id");
-                    String status = rs.getString("status");
-
-                    // Fetch products for this order
-                    PizzaDAO pizzaDAO = new PizzaDAO();
-                    List<Product> products = pizzaDAO.getAllPizzas(); // Adjust this as needed
-
-                    orders.add(new Order(orderId, customerId, products, status));
-                }
+                orders.add(new Order(orderId, customerId, pizzas, status));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,28 +29,40 @@ public class OrderDAO {
         return orders;
     }
 
-    // New method to get all orders by status
-    public List<Order> getOrdersByStatus(String status) {
-        List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM orders WHERE status = ?";
+    public boolean placeOrder(Order order) {
+        String query = "INSERT INTO orders (customer_id, status) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, status);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    int orderId = rs.getInt("id");
-                    int customerId = rs.getInt("customer_id");
-
-                    // Fetch products for this order
-                    PizzaDAO pizzaDAO = new PizzaDAO();
-                    List<Product> products = pizzaDAO.getAllPizzas(); // Adjust this as needed
-
-                    orders.add(new Order(orderId, customerId, products, status));
+             PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, order.getCustomerId());
+            stmt.setString(2, order.getStatus());
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int orderId = generatedKeys.getInt(1);
+                        addPizzasToOrder(orderId, order.getPizzas());
+                        return true;
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return orders;
+        return false;
+    }
+
+    private void addPizzasToOrder(int orderId, List<Pizza> pizzas) {
+        String query = "INSERT INTO pizza_order (order_id, pizza_id) VALUES (?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            for (Pizza pizza : pizzas) {
+                stmt.setInt(1, orderId);
+                stmt.setInt(2, pizza.getId());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
