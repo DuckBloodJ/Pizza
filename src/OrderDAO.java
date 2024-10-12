@@ -19,9 +19,9 @@ public class OrderDAO {
 
                 // Fetch pizzas for this order
                 PizzaDAO pizzaDAO = new PizzaDAO();
-                List<Pizza> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
+                List<Product> products = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
 
-                orders.add(new Order(orderId, customerId, pizzas, status));
+                orders.add(new Order(orderId, customerId, products, status));
             }
         } catch (SQLException e) {
             e.printStackTrace();

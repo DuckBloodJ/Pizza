@@ -3,13 +3,13 @@ import java.util.List;
 public class Order {
     private int id;
     private int customerId;
-    private List<Pizza> pizzas;
+    private List<Product> products;
     private String status;
 
-    public Order(int id, int customerId, List<Pizza> pizzas, String status) {
+    public Order(int id, int customerId, List<Product> products, String status) {
         this.id = id;
         this.customerId = customerId;
-        this.pizzas = pizzas;
+        this.products = products;
         this.status = status;
     }
 
@@ -22,11 +22,14 @@ public class Order {
         return customerId;
     }
 
-    public List<Pizza> getPizzas() {
-        return pizzas;
+    public List<Product> getProducts() {
+        return products;
     }
 
     public String getStatus() {
         return status;
+    }
+    public void updateStatus(String update ){
+        status = update;
     }
 }
