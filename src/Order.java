@@ -29,4 +29,7 @@ public class Order {
     public String getStatus() {
         return status;
     }
+    public void setStatus(String update){
+        status = update;
+    }
 }
