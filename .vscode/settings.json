@@ -1,5 +1,7 @@
 {
     "java.project.referencedLibraries": [
       "/Users/tjebbedasbach/desktop/java/javafx-sdk-21.0.1/lib/*.jar"
-    ]
+    ],
+    "java.jdt.ls.java.home": "/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
+
   }
