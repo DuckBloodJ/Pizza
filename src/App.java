@@ -21,6 +21,7 @@ public class App {
             System.out.println("\nPizza Ordering System - Login");
             System.out.println("1. Login");
             System.out.println("2. Register");
+            System.out.println("3. Staff Login");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
@@ -30,6 +31,9 @@ public class App {
                     break;
                 case "2":
                     handleRegistration();
+                    break;
+                case "3": 
+                    //handleStaffLogin();
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
