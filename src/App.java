@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public class App {
     private Customer loggedInCustomer;
+    private Staff loggedInStaff;
     private List<Product> shoppingCart = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
@@ -35,7 +36,7 @@ public class App {
                     handleRegistration();
                     break;
                 case "3":
-                    //handleStaffLogin();
+                    handleStaffLogin();
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -247,6 +248,60 @@ public class App {
             }
         }
     }
+    private void handleStaffLogin(){
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        StaffDAO staffDAO = new StaffDAO();
+        Staff staff = staffDAO.getStaffByUsernameAndPassword(username, password);
+        if (staff != null) {
+            loggedInStaff = staff;
+            //showStaffMenu();
+        } else {
+            System.out.println("Invalid username or password.");
+        }
+    }
+    private void showStaffMenu(){
+        while (true) {
+            System.out.println("\nStaff View");
+            System.out.println("1. Order status");
+            System.out.println("2. Delivery Status");
+            System.out.println("3. Analytics");
+            System.out.println("4. Logout");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    
+                    break;
+                case "2":
+                    
+                    break;
+                case "3":
+                    
+                    break;
+                case "4":
+                    loggedInStaff = null;
+                    
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+    private void showorderStatusMenu(){
+
+    }
+    private void deliveryStatusMenu(){
+
+    }
+    private void analyticsMenu(){
+
+    }
+    
 
 
     private void addToCart(Product item) {

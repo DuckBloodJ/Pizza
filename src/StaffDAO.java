@@ -17,8 +17,8 @@ public class StaffDAO {
                     return new Staff(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getString("position"),   // Assuming staff has a position field
-                        rs.getString("email"),      // Example field
+                        rs.getString("position"),   
+                        rs.getString("email"),      
                         rs.getString("phone"),
                         rs.getString("address"),
                         rs.getString("username"),
@@ -44,8 +44,8 @@ public class StaffDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, newStaff.getName());
-            stmt.setString(2, newStaff.getPosition()); // Assuming a position field
-            stmt.setString(3, newStaff.getEmail());    // Assuming an email field
+            stmt.setString(2, newStaff.getPosition()); 
+            stmt.setString(3, newStaff.getEmail());   
             stmt.setString(4, newStaff.getPhoneNumber());
             stmt.setString(5, newStaff.getAddress());
             stmt.setString(6, newStaff.getUsername());
