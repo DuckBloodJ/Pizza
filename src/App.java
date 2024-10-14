@@ -1,10 +1,12 @@
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDateTime; 
 
 public class App {
     private Customer loggedInCustomer;
-    private List<Pizza> shoppingCart = new ArrayList<>();
+    private List<Product> shoppingCart = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -68,12 +70,14 @@ public class App {
         String phoneNumber = scanner.nextLine();
         System.out.print("Enter address: ");
         String address = scanner.nextLine();
+        System.out.print("Enter postalCode: ");
+        String postalCode = scanner.nextLine();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
-        Customer customer = new Customer(0, name, gender, birthdate, phoneNumber, address, username, password);
+        Customer customer = new Customer(0, name, gender, birthdate, phoneNumber, address,postalCode, username, password);
         CustomerDAO customerDAO = new CustomerDAO();
         if (customerDAO.registerCustomer(customer)) {
             System.out.println("Registration successful.");
@@ -84,12 +88,12 @@ public class App {
 
     private void showMenuPage() {
         PizzaDAO pizzaDAO = new PizzaDAO();
-        List<Pizza> pizzaList = pizzaDAO.getAllPizzas();
+        List<Product> pizzaList = pizzaDAO.getAllPizzas();
 
         while (true) {
             System.out.println("\nPizza Ordering System - Menu");
             for (int i = 0; i < pizzaList.size(); i++) {
-                Pizza pizza = pizzaList.get(i);
+                Product pizza = pizzaList.get(i);
                 System.out.printf("%d. %s - Price: %.2f€\n   Ingredients: %s\n   Vegetarian: %s\n   Vegan: %s\n",
                         i + 1, pizza.getName(), pizza.getPrice(), pizza.getIngredients(),
                         pizza.isVegetarian() ? "Yes" : "No",
@@ -119,7 +123,7 @@ public class App {
         }
     }
 
-    private void addToCart(Pizza pizza) {
+    private void addToCart(Product pizza) {
         shoppingCart.add(pizza);
         System.out.println("Added to cart: " + pizza.getName());
     }
@@ -130,7 +134,7 @@ public class App {
         } else {
             System.out.println("\nShopping Cart:");
             for (int i = 0; i < shoppingCart.size(); i++) {
-                Pizza pizza = shoppingCart.get(i);
+                Product pizza = shoppingCart.get(i);
                 System.out.printf("%d. %s - Price: %.2f€\n", i + 1, pizza.getName(), pizza.getPrice());
             }
             System.out.println("\n1. Place Order");
@@ -153,7 +157,7 @@ public class App {
     private void placeOrder() {
         if (!shoppingCart.isEmpty() && loggedInCustomer != null) {
             OrderDAO orderDAO = new OrderDAO();
-            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending");
+            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending",LocalDateTime.now(),loggedInCustomer.getPostalCode());
             if (orderDAO.placeOrder(order)) {
                 System.out.println("Order placed successfully!");
                 shoppingCart.clear();

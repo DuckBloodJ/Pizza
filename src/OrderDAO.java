@@ -2,6 +2,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,9 @@ public class OrderDAO {
 
                 // Fetch pizzas for this order
                 PizzaDAO pizzaDAO = new PizzaDAO();
-                List<Pizza> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
+                List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
 
-                orders.add(new Order(orderId, customerId, pizzas, status));
+                orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), /* need to get the postal code from the customer instance using the customer id  */ ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -51,11 +53,11 @@ public class OrderDAO {
         return false;
     }
 
-    private void addPizzasToOrder(int orderId, List<Pizza> pizzas) {
+    private void addPizzasToOrder(int orderId, List<Product> pizzas) {
         String query = "INSERT INTO pizza_order (order_id, pizza_id) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            for (Pizza pizza : pizzas) {
+            for (Product pizza : pizzas) {
                 stmt.setInt(1, orderId);
                 stmt.setInt(2, pizza.getId());
                 stmt.addBatch();

@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PizzaDAO {
-    public List<Pizza> getAllPizzas() {
-        List<Pizza> pizzas = new ArrayList<>();
+    public List<Product> getAllPizzas() {
+        List<Product> pizzas = new ArrayList<>();
         String query = "SELECT * FROM pizzas";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                pizzas.add(new Pizza(
+                pizzas.add(new Product(
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getDouble("price"),
@@ -29,7 +29,7 @@ public class PizzaDAO {
         return pizzas;
     }
 
-    public boolean addPizza(Pizza pizza) {
+    public boolean addPizza(Product pizza) {
         String query = "INSERT INTO pizzas (name, price, vegetarian, vegan, ingredients) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
