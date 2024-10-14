@@ -252,6 +252,11 @@ public class App {
     private void addToCart(Product item) {
         shoppingCart.add(item);
         System.out.println("Added to cart: " + item.getName());
+        double cartTotal = 0;
+        for(int i = 0; i < shoppingCart.size(); i++){
+                cartTotal += shoppingCart.get(i).getPrice();
+        }
+        System.out.println("Cart total: €" + cartTotal );
     }
 
     private void viewCart() {
@@ -263,6 +268,13 @@ public class App {
                 Product item = shoppingCart.get(i);
                 System.out.printf("%d. %s - Price: %.2f€\n", i + 1, item.getName(), item.getPrice());
             }
+            System.out.println("------------");
+            double orderTotal = 0;
+            for(int i = 0; i < shoppingCart.size(); i++){
+                    orderTotal += shoppingCart.get(i).getPrice();
+            }
+            System.out.println("Order Total €" + orderTotal);
+            System.out.println("------------");
             System.out.println("\n1. Place Order");
             System.out.println("2. Back to Main Menu");
             System.out.print("Choose an option: ");

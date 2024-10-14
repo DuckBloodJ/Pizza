@@ -11,6 +11,7 @@ public class Order {
     private String status;
     private LocalDateTime orderTime;
     private String postalCode;
+    private double totalPrice;
 
     public Order(int id, int customerId, List<Product> products, String status,LocalDateTime orderTime, String postalCode) {
         this.id = id;
@@ -19,11 +20,20 @@ public class Order {
         this.status = status;
         this.orderTime = orderTime;
         this.postalCode = postalCode;
+        calcPrice();
     }
 
     // Getters and setters
     public int getId() {
         return id;
+    }
+    private void calcPrice(){
+        for(int i= 0; i < products.size();i++){
+            totalPrice += products.get(i).getPrice();
+        }
+    }
+    public double getPrice(){
+        return totalPrice;
     }
     public String getPostalCode(){
         return postalCode;
