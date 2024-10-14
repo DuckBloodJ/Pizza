@@ -269,11 +269,20 @@ public class App {
                 System.out.printf("%d. %s - Price: %.2f€\n", i + 1, item.getName(), item.getPrice());
             }
             System.out.println("------------");
-            double orderTotal = 0;
+            double orderTotal = 0.0;
+            int pizzaCount = 0;
             for(int i = 0; i < shoppingCart.size(); i++){
                     orderTotal += shoppingCart.get(i).getPrice();
+                    if(shoppingCart.get(i) instanceof Pizza){
+                        pizzaCount++;
+                    }
+
             }
-            System.out.println("Order Total €" + orderTotal);
+            boolean dis10 = loggedInCustomer.tenPizzaCheck();
+            orderTotal = (dis10) ? orderTotal * 0.9 : orderTotal;
+            loggedInCustomer.addPizzaCount(pizzaCount);
+            
+            System.out.println((dis10) ? "Order Total €" + orderTotal+ "\n (With 10% discount)" : "Order Total €" + orderTotal);
             System.out.println("------------");
             System.out.println("\n1. Place Order");
             System.out.println("2. Back to Main Menu");
@@ -282,7 +291,7 @@ public class App {
 
             switch (choice) {
                 case "1":
-                    placeOrder();
+                    placeOrder(loggedInCustomer.tenPizzaCheck());
                     break;
                 case "2":
                     return;
@@ -292,10 +301,10 @@ public class App {
         }
     }
 
-    private void placeOrder() {
+    private void placeOrder(boolean discount10) {
         if (!shoppingCart.isEmpty() && loggedInCustomer != null) {
             OrderDAO orderDAO = new OrderDAO();
-            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending", LocalDateTime.now(), loggedInCustomer.getPostalCode());
+            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending", LocalDateTime.now(), loggedInCustomer.getPostalCode(), discount10);
             if (orderDAO.placeOrder(order)) {
                 System.out.println("Order placed successfully!");
                 shoppingCart.clear();

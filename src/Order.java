@@ -13,24 +13,25 @@ public class Order {
     private String postalCode;
     private double totalPrice;
 
-    public Order(int id, int customerId, List<Product> products, String status,LocalDateTime orderTime, String postalCode) {
+    public Order(int id, int customerId, List<Product> products, String status,LocalDateTime orderTime, String postalCode, boolean discount10) {
         this.id = id;
         this.customerId = customerId;
         this.products = products;
         this.status = status;
         this.orderTime = orderTime;
         this.postalCode = postalCode;
-        calcPrice();
+        calcPrice(discount10);
     }
 
     // Getters and setters
     public int getId() {
         return id;
     }
-    private void calcPrice(){
+    private void calcPrice(boolean discount10){
         for(int i= 0; i < products.size();i++){
             totalPrice += products.get(i).getPrice();
         }
+        totalPrice = (discount10) ? totalPrice * 0.9: totalPrice;
     }
     public double getPrice(){
         return totalPrice;

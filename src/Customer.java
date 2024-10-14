@@ -8,8 +8,10 @@ public class Customer {
     private String username;
     private String password;
     private String postalCode;
+    private int tenPizzaCounter;
+    private boolean pizzaDiscount;
 
-    public Customer(int id, String name, String gender, String birthdate, String phoneNumber, String address, String username, String password, String postalCode) {
+    public Customer(int id, String name, String gender, String birthdate, String phoneNumber, String address, String postalCode, String username, String password) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -19,12 +21,26 @@ public class Customer {
         this.username = username;
         this.password = password;
         this.postalCode = postalCode;
+        tenPizzaCounter = 0;
+        pizzaDiscount = false;
     }
 
     // Getters and setters
     public int getId() {
         return id;
     }
+    public void addPizzaCount(int i){
+        tenPizzaCounter += i;
+        if (tenPizzaCounter >= 10){
+            tenPizzaCounter = tenPizzaCounter % 10;
+        }
+        else{pizzaDiscount = false;}
+
+    }
+    public boolean tenPizzaCheck(){
+        return pizzaDiscount;
+    }
+
     public String getPostalCode(){
         return postalCode;
     }

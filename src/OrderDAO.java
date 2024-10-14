@@ -27,7 +27,7 @@ public class OrderDAO {
             PizzaDAO pizzaDAO = new PizzaDAO();
             List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
 
-            orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode));
+            orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode, false));
         }
     } catch (SQLException e) {
         e.printStackTrace();
