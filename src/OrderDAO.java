@@ -9,27 +9,32 @@ import java.util.List;
 
 public class OrderDAO {
     public List<Order> getAllOrders() {
-        List<Order> orders = new ArrayList<>();
-        String query = "SELECT * FROM orders";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                int orderId = rs.getInt("id");
-                int customerId = rs.getInt("customer_id");
-                String status = rs.getString("status");
+    List<Order> orders = new ArrayList<>();
+    String query = "SELECT orders.*, customers.postalCode FROM orders " +
+                   "JOIN customers ON orders.customer_id = customers.id";
 
-                // Fetch pizzas for this order
-                PizzaDAO pizzaDAO = new PizzaDAO();
-                List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query);
+         ResultSet rs = stmt.executeQuery()) {
 
-                orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), /* need to get the postal code from the customer instance using the customer id  */ ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (rs.next()) {
+            int orderId = rs.getInt("id");
+            int customerId = rs.getInt("customer_id");
+            String status = rs.getString("status");
+            String postalCode = rs.getString("postalCode");
+
+            // Fetch pizzas for this order
+            PizzaDAO pizzaDAO = new PizzaDAO();
+            List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
+
+            orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode));
         }
-        return orders;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return orders;
+}
+
 
     public boolean placeOrder(Order order) {
         String query = "INSERT INTO orders (customer_id, status) VALUES (?, ?)";

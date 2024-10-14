@@ -8,7 +8,6 @@ public class Customer {
     private String username;
     private String password;
     private String postalCode;
-    private int pizzaCount;
 
     public Customer(int id, String name, String gender, String birthdate, String phoneNumber, String address, String username, String password, String postalCode) {
         this.id = id;
@@ -25,15 +24,6 @@ public class Customer {
     // Getters and setters
     public int getId() {
         return id;
-    }
-    public void newPizza(){
-        pizzaCount++;
-    }
-    public int getPizzaCount(){
-        return pizzaCount;
-    }
-    public void resetPizzaCount(){
-        pizzaCount = 0;
     }
     public String getPostalCode(){
         return postalCode;

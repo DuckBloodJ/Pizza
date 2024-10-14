@@ -20,7 +20,8 @@ public class CustomerDAO {
                         rs.getString("gender"),
                         rs.getString("birthday"),
                         rs.getString("phone"),
-                        rs.getString("address"),rs.getString("postalcode"),
+                        rs.getString("address"),
+                        rs.getString("postalcode"),
                         rs.getString("username"),
                         rs.getString("password")
                         
