@@ -59,7 +59,7 @@ public class StaffDAO {
     }
     public ArrayList<DeliveryPerson> getAvailableDeliveryStaff(){
         ArrayList<DeliveryPerson> deliveryPersons = new ArrayList<>();
-        String query = "SELECT * FROM staff WHERE position = 'Delivery Person' AND isAvailable = true";
+        String query = "SELECT * FROM staff WHERE position = 'Delivery' AND isAvailable = true";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {

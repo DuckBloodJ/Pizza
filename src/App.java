@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ public class App {
     private Staff loggedInStaff;
     private List<Product> shoppingCart = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
+
 
     public static void main(String[] args) {
         App app = new App();
@@ -163,6 +165,7 @@ public class App {
                 Product drink = drinkList.get(i);
                 System.out.printf("%d. %s - Price: %.2f€",
                         i + 1, drink.getName(), drink.getPrice());
+                System.out.println();
             }
             System.out.println((drinkList.size() + 1) + ". Back to Main Menu");
             System.out.print("Choose an option: ");
@@ -211,6 +214,7 @@ public class App {
                 Product dessert = dessertList.get(i);
                 System.out.printf("%d. %s - Price: %.2f€",
                         i + 1, dessert.getName(), dessert.getPrice());
+                System.out.println();
             }
             System.out.println((dessertList.size() + 1) + ". Back to Main Menu");
             System.out.print("Choose an option: ");
@@ -266,9 +270,9 @@ public class App {
     private void showStaffMenu(){
         while (true) {
             System.out.println("\nOrder Status" );
-            System.out.println("1. Show order Status");
-            System.out.println("2. ");
-            System.out.println("3. See All Being Delivered");
+            System.out.println("1. Show order status");
+            System.out.println("2. Show delivery status");
+            System.out.println("3. Show shop analysis");
             System.out.println("4. Logout");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
@@ -299,10 +303,10 @@ public class App {
             System.out.println("1. See All Orders");
             System.out.println("2. See All Pending");
             System.out.println("3. See all Ready to Deliver");
-            System.out.println("3. See All Being Delivered");
-            System.out.println("4. See All Completed");
-            System.out.println("5. Edit order status");
-            System.out.println("6. Go back");
+            System.out.println("4. See All Being Delivered");
+            System.out.println("5. See All Completed");
+            System.out.println("6. Edit order status");
+            System.out.println("7. Go back");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
@@ -378,6 +382,7 @@ public class App {
             if(checkOrderID(orderID) && checkOrderStatus(newStatus)){
                 orderDAO.editOrderStatus(orderID, newStatus);
                 System.out.println("Order status updated successfully.");
+                break;
             }
             else{
                 System.out.println("Invalid order ID or status.");
@@ -489,7 +494,7 @@ public class App {
         List<Order> orders = orderDAO.getFilteredOrders(postalCode, gender, minAge);
         double totalRevenue = 0;
         for (Order order : orders) {
-            totalRevenue += order.getPrice();
+            totalRevenue += order.getTotalPrice();
         }
 
         System.out.printf("Total Revenue for this month: €%.2f\n", totalRevenue);
@@ -554,7 +559,13 @@ public class App {
     private void placeOrder(boolean discount10) {
         if (!shoppingCart.isEmpty() && loggedInCustomer != null) {
             OrderDAO orderDAO = new OrderDAO();
-            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending", LocalDateTime.now(), loggedInCustomer.getPostalCode(), discount10);
+            
+            Double orderTotal = 0.0;
+            for(int i = 0; i < shoppingCart.size(); i++){
+                orderTotal += shoppingCart.get(i).getPrice();
+            }
+
+            Order order = new Order(0, loggedInCustomer.getId(), shoppingCart, "Pending", LocalDateTime.now(), loggedInCustomer.getPostalCode(), orderTotal, discount10);
             if (orderDAO.placeOrder(order)) {
                 System.out.println("Order placed successfully!");
                 shoppingCart.clear();

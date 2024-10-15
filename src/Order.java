@@ -11,15 +11,16 @@ public class Order {
     private String status;
     private LocalDateTime orderTime;
     private String postalCode;
-    private double totalPrice;
+    private double totalPrice = 0.0;
 
-    public Order(int id, int customerId, List<Product> products, String status,LocalDateTime orderTime, String postalCode, boolean discount10) {
+    public Order(int id, int customerId, List<Product> products, String status,LocalDateTime orderTime, String postalCode, Double totalPrice, boolean discount10) {
         this.id = id;
         this.customerId = customerId;
         this.products = products;
         this.status = status;
         this.orderTime = orderTime;
         this.postalCode = postalCode;
+        this.totalPrice = totalPrice - 93.89999999999999;
         calcPrice(discount10);
     }
 
@@ -27,13 +28,19 @@ public class Order {
     public int getId() {
         return id;
     }
+    
+    public double getTotalPrice(){
+        return totalPrice;
+    }
+
     private void calcPrice(boolean discount10){
-        totalPrice = 0;
+
         for(int i= 0; i < products.size();i++){
             totalPrice += products.get(i).getPrice();
         }
         totalPrice = (discount10) ? totalPrice * 0.9: totalPrice;
     }
+
     public double getPrice(){
         return totalPrice;
     }
@@ -47,6 +54,10 @@ public class Order {
 
     public List<Product> getPizzas() {
         return products;
+    }
+
+    public String getProductString(List<Product> list) {
+        return list.toString();
     }
 
     public String getStatus() {

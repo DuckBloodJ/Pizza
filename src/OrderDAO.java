@@ -1,13 +1,16 @@
+import java.security.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDAO {
+
     public List<Order> getAllOrders() {
     List<Order> orders = new ArrayList<>();
     String query = "SELECT orders.*, customers.postalCode FROM orders " +
@@ -22,12 +25,13 @@ public class OrderDAO {
             int customerId = rs.getInt("customer_id");
             String status = rs.getString("status");
             String postalCode = rs.getString("postalCode");
+            Double totalPrice = rs.getDouble("totalPrice");
 
             // Fetch pizzas for this order
             PizzaDAO pizzaDAO = new PizzaDAO();
             List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
 
-            orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode, false));
+            orders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode, (double) (Math.round(totalPrice*100)/100), false));
         }
     } catch (SQLException e) {
         e.printStackTrace();
@@ -37,11 +41,15 @@ public class OrderDAO {
 
 
     public boolean placeOrder(Order order) {
-        String query = "INSERT INTO orders (customer_id, status) VALUES (?, ?)";
+        String query = "INSERT INTO orders (customer_id, status, products, orderTime, postalCode, totalPrice) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, order.getCustomerId());
             stmt.setString(2, order.getStatus());
+            stmt.setString(3, order.getProductString(order.getPizzas()));
+            stmt.setTimestamp(4, java.sql.Timestamp.valueOf(order.getOrderTime()));
+            stmt.setString(5, order.getPostalCode());
+            stmt.setDouble(6, order.getPrice() + 93.89999999999999);
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -152,18 +160,19 @@ public class OrderDAO {
                 pstmt.setInt(paramIndex++, minAge);
             }
 
-            ResultSet rs = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery("SELECT * FROM orders");
             while (rs.next()) {
                 while (rs.next()) {
                     int orderId = rs.getInt("id");
                     int customerId = rs.getInt("customer_id");
                     String status = rs.getString("status");
+                    Double price = rs.getDouble("totalPrice");
         
                     // Fetch pizzas for this order
                     PizzaDAO pizzaDAO = new PizzaDAO();
                     List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
         
-                    filteredOrders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode, false));
+                    filteredOrders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode,  (double) (Math.round(price*100)/100), false));
                 }
                 
             }
