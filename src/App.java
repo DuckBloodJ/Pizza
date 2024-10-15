@@ -258,18 +258,49 @@ public class App {
         Staff staff = staffDAO.getStaffByUsernameAndPassword(username, password);
         if (staff != null) {
             loggedInStaff = staff;
-            //showStaffMenu();
+            showStaffMenu();
         } else {
             System.out.println("Invalid username or password.");
         }
     }
     private void showStaffMenu(){
         while (true) {
-            System.out.println("\nStaff View");
-            System.out.println("1. Order status");
-            System.out.println("2. Delivery Status");
-            System.out.println("3. Analytics");
+            System.out.println("\nOrder Status" );
+            System.out.println("1. Show order Status");
+            System.out.println("2. ");
+            System.out.println("3. See All Being Delivered");
             System.out.println("4. Logout");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    showorderStatusMenu();
+                    break;
+                case "2":
+                    deliveryStatusMenu();
+                    break;
+                case "3":
+                    analyticsMenu();
+                    break;
+                case "4":
+                    loggedInStaff = null;
+                    System.out.println("Logging out");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+    private void showorderStatusMenu(){
+        while (true) {
+            System.out.println("\nOrder Status" );
+            System.out.println("1. See All Orders");
+            System.out.println("2. See All Pending");
+            System.out.println("3. See All Being Delivered");
+            System.out.println("4. See All Completed");
+            System.out.println("5. Edit order status");
+            System.out.println("5. Go back");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
@@ -283,25 +314,54 @@ public class App {
                 case "3":
                     
                     break;
-                case "4":
-                    loggedInStaff = null;
-                    
+                case "4":             
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
     }
-    private void showorderStatusMenu(){
-
-    }
     private void deliveryStatusMenu(){
+        while (true) {
+            System.out.println("\nOrder Status" );
+            System.out.println("1. See all Available Drivers");
+            System.out.println("2. See All Being Delivered");
+            System.out.println("3. Edit order status");
+            System.out.println("4. Go back");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
 
+            switch (choice) {
+                case "1":
+                    // prints the ones being delivered 
+                    break;
+                case "2":
+                    //prints the ones being 
+                    break;
+                case "3":
+                    
+                    break;
+                
+                case "4":
+                    loggedInStaff = null;
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
     }
     private void analyticsMenu(){
+        while (true) {
+            System.out.println("\nStore Analytics" );
+            System.out.println("1. See Monthly Revenue");
+            System.out.println("2. See Product Performance");
+            System.out.println("4. Go back");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
 
+        }
     }
-    
+
 
 
     private void addToCart(Product item) {
