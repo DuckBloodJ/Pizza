@@ -489,7 +489,7 @@ public class App {
         List<Order> orders = orderDAO.getFilteredOrders(postalCode, gender, minAge);
         double totalRevenue = 0;
         for (Order order : orders) {
-            totalRevenue += order.getTotalPrice();
+            totalRevenue += order.getPrice();
         }
 
         System.out.printf("Total Revenue for this month: €%.2f\n", totalRevenue);

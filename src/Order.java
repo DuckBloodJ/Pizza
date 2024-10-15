@@ -27,10 +27,8 @@ public class Order {
     public int getId() {
         return id;
     }
-    public double getTotalPrice(){
-        return totalPrice;
-    }
     private void calcPrice(boolean discount10){
+        totalPrice = 0;
         for(int i= 0; i < products.size();i++){
             totalPrice += products.get(i).getPrice();
         }
