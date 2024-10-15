@@ -2,7 +2,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
 public class StaffDAO {
     
     // Method to get a staff member by username and password (for login purposes)
@@ -56,5 +56,29 @@ public class StaffDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    public ArrayList<DeliveryPerson> getAvailableDeliveryStaff(){
+        ArrayList<DeliveryPerson> deliveryPersons = new ArrayList<>();
+        String query = "SELECT * FROM staff WHERE position = 'Delivery Person' AND isAvailable = true";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                deliveryPersons.add(new DeliveryPerson(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("position"),
+                    rs.getString("email"),
+                    rs.getString("phone"),
+                    rs.getString("address"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getString("assignedPostalCodes")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return deliveryPersons;
     }
 }

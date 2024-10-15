@@ -2,14 +2,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class DeliveryPerson extends Staff {
-    private List<String> assignedPostalCodes;  // Postal codes this person is assigned to
+    private String assignedPostalCodes;  // Postal codes this person is assigned to
     private boolean isAvailable;
     private LocalDateTime nextAvailableTime;
 
-    public DeliveryPerson(int id, String name, String position, String email, String phoneNumber, String address, String username, String password, List<String> assignedPostalCodes) {
+    public DeliveryPerson(int id, String name, String position, String email, String phoneNumber, String address, String username, String password, String assignedPostalCodes) {
         super(id, name, position, email, phoneNumber, address, username, password);
         this.assignedPostalCodes = assignedPostalCodes;
-        this.isAvailable = true;
+        isAvailable = true;
+        nextAvailableTime = LocalDateTime.now();
     }
 
     // Check if the delivery person can deliver to the specified postal code
@@ -32,11 +33,11 @@ public class DeliveryPerson extends Staff {
     }
 
     // Getters and setters for postal codes and availability
-    public List<String> getAssignedPostalCodes() {
+    public String getAssignedPostalCodes() {
         return assignedPostalCodes;
     }
 
-    public void setAssignedPostalCodes(List<String> assignedPostalCodes) {
+    public void setAssignedPostalCodes(String assignedPostalCodes) {
         this.assignedPostalCodes = assignedPostalCodes;
     }
 
@@ -46,5 +47,8 @@ public class DeliveryPerson extends Staff {
 
     public LocalDateTime getNextAvailableTime() {
         return nextAvailableTime;
+    }
+    public String toString(){
+        return "Name: " + super.getName() + ", Email: " + super.getEmail() + ", Phone Number: " + super.getPhoneNumber() + ", Assigned Postal Codes: " + assignedPostalCodes;
     }
 }

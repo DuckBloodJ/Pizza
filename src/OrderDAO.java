@@ -72,4 +72,104 @@ public class OrderDAO {
             e.printStackTrace();
         }
     }
+    public List<Order> getAllPending(){
+        List<Order> orders = getAllOrders();
+        List<Order> pendingOrders = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.getStatus().equals("Pending")) {
+                pendingOrders.add(order);
+            }
+        }
+        return pendingOrders;
+    }
+    public List<Order> getAllBeingDelivered(){
+        List<Order> orders = getAllOrders();
+        List<Order> beingDeliveredOrders = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.getStatus().equals("Being Delivered")) {
+                beingDeliveredOrders.add(order);
+            }
+        }
+        return beingDeliveredOrders;
+    }
+    public List<Order> getAllCompleted(){
+        List<Order> orders = getAllOrders();
+        List<Order> completedOrders = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.getStatus().equals("Completed")) {
+                completedOrders.add(order);
+            }
+        }
+        return completedOrders;
+    }
+    public void editOrderStatus(String ordersid, String newStatus){
+        int orderID = Integer.parseInt(ordersid);
+        String query = "UPDATE orders SET status = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newStatus);
+            stmt.setInt(2, orderID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {}
+    }
+    public List<Order> getAllReadyToDeliver(){
+        List<Order> orders = getAllOrders();
+        List<Order> readyToDeliverOrders = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.getStatus().equals("Ready to Deliver")) {
+                readyToDeliverOrders.add(order);
+            }
+        }
+        return readyToDeliverOrders;
+    }
+    public List<Order> getFilteredOrders(String postalCode, String gender, Integer minAge) {
+        List<Order> filteredOrders = new ArrayList<>();
+        String query = "SELECT o.* FROM orders o " +
+                       "JOIN customers c ON o.customer_id = c.id " +
+                       "WHERE YEAR(o.order_date) = YEAR(CURDATE()) AND MONTH(o.order_date) = MONTH(CURDATE())";
+        
+        if (!postalCode.isEmpty()) {
+            query += " AND c.postal_code = ?";
+        }
+        if (!gender.isEmpty()) {
+            query += " AND c.gender = ?";
+        }
+        if (minAge != null) {
+            query += " AND YEAR(CURDATE()) - YEAR(c.birthdate) >= ?";
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            int paramIndex = 1;
+            if (!postalCode.isEmpty()) {
+                pstmt.setString(paramIndex++, postalCode);
+            }
+            if (!gender.isEmpty()) {
+                pstmt.setString(paramIndex++, gender);
+            }
+            if (minAge != null) {
+                pstmt.setInt(paramIndex++, minAge);
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                while (rs.next()) {
+                    int orderId = rs.getInt("id");
+                    int customerId = rs.getInt("customer_id");
+                    String status = rs.getString("status");
+        
+                    // Fetch pizzas for this order
+                    PizzaDAO pizzaDAO = new PizzaDAO();
+                    List<Product> pizzas = pizzaDAO.getAllPizzas(); // Assuming getPizzasByOrderId method
+        
+                    filteredOrders.add(new Order(orderId, customerId, pizzas, status, LocalDateTime.now(), postalCode, false));
+                }
+                
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return filteredOrders;
+    }
 }

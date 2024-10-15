@@ -27,6 +27,9 @@ public class Order {
     public int getId() {
         return id;
     }
+    public double getTotalPrice(){
+        return totalPrice;
+    }
     private void calcPrice(boolean discount10){
         for(int i= 0; i < products.size();i++){
             totalPrice += products.get(i).getPrice();
@@ -77,4 +80,10 @@ public class Order {
         }
         return pizzaCount;
     }
+    public String toString(){
+        return "Order ID: " + id + ", Customer ID: " + customerId + ", Status: " + status + ", Order Time: " + orderTime + ", Postal Code: " + postalCode + ", Total Price: " + totalPrice;
+    }
+    
+
+
 }

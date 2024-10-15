@@ -292,35 +292,128 @@ public class App {
             }
         }
     }
+    // for the order status menu
     private void showorderStatusMenu(){
         while (true) {
             System.out.println("\nOrder Status" );
             System.out.println("1. See All Orders");
             System.out.println("2. See All Pending");
+            System.out.println("3. See all Ready to Deliver");
             System.out.println("3. See All Being Delivered");
             System.out.println("4. See All Completed");
             System.out.println("5. Edit order status");
-            System.out.println("5. Go back");
+            System.out.println("6. Go back");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    
+                    showAllOrders();
                     break;
                 case "2":
-                    
+                    showAllPending();
                     break;
                 case "3":
-                    
+                    showAllReadyToDeliver();
                     break;
-                case "4":             
+                case "4":
+                    showAllBeingDelivered();
+                    break;
+                case "5":             
+                    showAllCompleted();
+                    break;
+                case "6":
+                    editOrderStatus();
+                    break;
+                case "7":
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
     }
+    private void showAllOrders(){
+        OrderDAO orderDAO = new OrderDAO();
+        List<Order> orders = orderDAO.getAllOrders();
+        for (Order order : orders) {
+            System.out.println(order);
+        }
+    }
+    private void showAllPending(){
+        OrderDAO orderDAO = new OrderDAO();
+        List<Order> orders = orderDAO.getAllPending();
+        for (Order order : orders) {
+            System.out.println(order);
+        }
+    }
+    private void showAllReadyToDeliver(){
+        OrderDAO orderDAO = new OrderDAO();
+        List<Order> orders = orderDAO.getAllReadyToDeliver();
+        for (Order order : orders) {
+            System.out.println(order);
+        }
+    }
+    private void showAllBeingDelivered(){
+        OrderDAO orderDAO = new OrderDAO();
+        List<Order> orders = orderDAO.getAllBeingDelivered();
+        for (Order order : orders) {
+            System.out.println(order);
+        }
+    }
+    private void showAllCompleted(){
+        OrderDAO orderDAO = new OrderDAO();
+        List<Order> orders = orderDAO.getAllCompleted();
+        for (Order order : orders) {
+            System.out.println(order);
+        }
+    }
+    private void editOrderStatus(){
+        while (true) {
+        
+            OrderDAO orderDAO = new OrderDAO();
+            System.out.print("Enter order ID: ");
+            String orderID = scanner.nextLine();
+            System.out.print("Enter new status: ");
+            String newStatus = scanner.nextLine();
+            if(checkOrderID(orderID) && checkOrderStatus(newStatus)){
+                orderDAO.editOrderStatus(orderID, newStatus);
+                System.out.println("Order status updated successfully.");
+            }
+            else{
+                System.out.println("Invalid order ID or status.");
+            }
+        }
+}
+    private boolean checkOrderID(String orderID){
+        OrderDAO orderDAO = new OrderDAO();
+        List<Order> orders = orderDAO.getAllOrders();
+        int number = 0;
+        try {
+            // Attempt to convert the string to an integer
+            number = Integer.parseInt(orderID);
+            for (Order order : orders) {
+                if (order.getId() == number) {
+                    return true;
+                }
+            }
+        } catch (NumberFormatException e) {
+            // Handle the case where the string is not a valid integer
+            System.err.println("Error: Invalid number  for input '" + orderID + "'");
+        }
+        System.out.println("Order ID not found.");
+        return false;
+    }
+    private boolean checkOrderStatus(String orderStatus){
+        if(orderStatus.equals("Pending") || orderStatus.equals("Ready to Deliver") || orderStatus.equals("Being Delivered") || orderStatus.equals("Completed")){
+            return true;
+        }
+        else{
+            System.out.println("Invalid status.");
+            return false;
+        }
+    }
+    // end of order status menu
+    // for the delivery status menu
     private void deliveryStatusMenu(){
         while (true) {
             System.out.println("\nOrder Status" );
@@ -334,36 +427,78 @@ public class App {
             switch (choice) {
                 case "1":
                     // prints the ones being delivered 
+                    showAllAvailableDrivers();
                     break;
                 case "2":
                     //prints the ones being 
+                    showAllBeingDelivered();
                     break;
                 case "3":
-                    
+                    editOrderStatus();
                     break;
-                
                 case "4":
-                    loggedInStaff = null;
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
     }
+    private void showAllAvailableDrivers() {
+        StaffDAO staffDAO = new StaffDAO();
+        ArrayList<DeliveryPerson> deliveryStaff = staffDAO.getAvailableDeliveryStaff();
+        if (deliveryStaff.isEmpty()) {
+            System.out.println("No available delivery staff at the moment.");
+        } else {
+            System.out.println("Available Delivery Staff:");
+            for (Staff deliveryPerson : deliveryStaff) {
+                System.out.println(deliveryPerson);
+            }
+        }
+    }
+    // end of the delivery status menu
+    
+    
     private void analyticsMenu(){
         while (true) {
             System.out.println("\nStore Analytics" );
-            System.out.println("1. See Monthly Revenue");
-            System.out.println("2. See Product Performance");
-            System.out.println("4. Go back");
+            System.out.println("1. See Monthly Report");
+            System.out.println("2. Go back");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
-
+            switch (choice) {
+                case "1":
+                    showMonthlyRevenue();
+                    break;
+                case "2":
+                    return;
+            }
         }
     }
+    private void showMonthlyRevenue(){
+        OrderDAO orderDAO = new OrderDAO();
 
+        System.out.println("\nMonthly Earnings Report");
+        System.out.print("Filter by postal code (leave blank for all): ");
+        String postalCode = scanner.nextLine();
+        System.out.print("Filter by gender (M/F/O, leave blank for all): ");
+        String gender = scanner.nextLine();
+        System.out.print("Filter by minimum age (leave blank for all): ");
+        String minAgeStr = scanner.nextLine();
+        Integer minAge = minAgeStr.isEmpty() ? null : Integer.parseInt(minAgeStr);
 
+        List<Order> orders = orderDAO.getFilteredOrders(postalCode, gender, minAge);
+        double totalRevenue = 0;
+        for (Order order : orders) {
+            totalRevenue += order.getTotalPrice();
+        }
 
+        System.out.printf("Total Revenue for this month: €%.2f\n", totalRevenue);
+        System.out.println("Filters applied:");
+        System.out.println("Postal Code: " + (postalCode.isEmpty() ? "All" : postalCode));
+        System.out.println("Gender: " + (gender.isEmpty() ? "All" : gender));
+        System.out.println("Minimum Age: " + (minAge == null ? "All" : minAge));
+        System.out.println("------------");
+    }
     private void addToCart(Product item) {
         shoppingCart.add(item);
         System.out.println("Added to cart: " + item.getName());
